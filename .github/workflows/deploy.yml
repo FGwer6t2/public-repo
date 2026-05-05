@@ -17,12 +17,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository_owner,, }}/public-repo:latest
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}:latest" | tr '[:upper:]' '[:lower:]')
           docker build -t $IMAGE_NAME .
 
       - name: Push Docker image
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository_owner,, }}/public-repo:latest
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}:latest" | tr '[:upper:]' '[:lower:]')
           docker push $IMAGE_NAME
 
   deploy:
@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Deploy to remote server via SSH
         env:
-          IMAGE_NAME: ghcr.io/${{ github.repository }}:latest
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}:latest" | tr '[:upper:]' '[:lower:]')
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
             docker pull $IMAGE_NAME && \
